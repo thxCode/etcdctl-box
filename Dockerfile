@@ -21,23 +21,34 @@ LABEL \
 	io.github.thxcode.docker.dockerfile="/Dockerfile"
 
 RUN apk add --update --no-cache \
-	dumb-init bash sudo \
-	&& rm -fr /var/cache/apk/* \
-	&& mkdir /tmp/tars
+		dumb-init \
+		bash \
+		sudo \
+		openssl \
+		jq \
+		curl \
+		python \
+		py-twisted \
+	&& apk add --no-cache --virtual=build-dependencies \
+		python-dev \
+		py-pip \
+	&& pip install --no-cache-dir -U \
+		incremental \
+		constantly \
+	&& apk del --purge build-dependencies \
+	&& rm -fr \
+		/var/cache/apk/* \
+		/root/.cache \
+		/tmp/*
 
-ENV DEFAULT_VERSION=v2.3.7 \
+ENV DEFAULT_VERSION=v2.3.8 \
 	IS_BOX=true
 
-COPY etcdctl_mgr /usr/local/bin
-
-ADD [ "https://github.com/coreos/etcd/releases/download/v2.3.7/etcd-v2.3.7-linux-amd64.tar.gz", "/tmp/tars/" ]
+ADD [ "https://github.com/coreos/etcd/releases/download/${DEFAULT_VERSION}/etcd-${DEFAULT_VERSION}-linux-amd64.tar.gz", "/tmp/tars/" ]
 
 RUN cd /tmp/tars \
-	&& tar xzf etcd-v2.3.7-linux-amd64.tar.gz \
-	&& cp etcd-v2.3.7-linux-amd64/etcdctl /usr/local/bin/etcdctl-v2.3.7 \
-	&& ln -s /usr/local/bin/etcdctl-${DEFAULT_VERSION} /usr/local/bin/etcdctl \
-	&& chmod a+x /usr/local/bin/etcdctl_mgr
-
-RUN rm -rf /tmp/tars
+	&& tar xzf etcd-${DEFAULT_VERSION}-linux-amd64.tar.gz \
+	&& cp etcd-${DEFAULT_VERSION}-linux-amd64/etcdctl /usr/local/bin/etcdctl \
+	&& rm -rf /tmp/tars
 
 CMD ["/bin/bash"]

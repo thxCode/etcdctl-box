@@ -8,9 +8,9 @@ Storing etcd 2.x client ctl by Alpine.
 
 ## References
 
-### etcdctl List
+### etcdctl version
 
-- [v2.3.7](https://github.com/coreos/etcd/releases/tag/v2.3.7)
+- [v2.3.8](https://github.com/coreos/etcd/releases/tag/v2.3.8)
 
 ## How to use this image
 
